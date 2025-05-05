@@ -1,0 +1,12 @@
+# Qodo
+.qodo
+
+node_modules
+bun.lock
+package-lock.json
+
+.env
+config/*
+
+src/db/*
+src/drizzle/migrations
