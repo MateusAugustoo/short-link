@@ -9,6 +9,7 @@ import {
   serializerCompiler,
   jsonSchemaTransform,
 } from "fastify-type-provider-zod";
+import { usersRoutes } from "./routes/users-routes";
 
 const server = fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
 
@@ -34,6 +35,8 @@ server.register(fastifySwagger, {
 server.register(fastifySwaggerUi, {
   routePrefix: "/docs",
 });
+
+server.register(usersRoutes)
 
 try {
   server.listen({ port: env.PORT });
