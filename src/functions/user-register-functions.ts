@@ -1,5 +1,4 @@
 import { ulid } from "ulid";
-import { hash } from "node:crypto";
 import { db } from "../drizzle/client";
 import { users } from "../drizzle/schema/user";
 
@@ -12,5 +11,13 @@ export const registerUser = async ({
   email,
   password,
 }: RegisterUserRequest) => {
-  
+  const id = ulid()
+
+  const user = await db.insert(users).values({
+    id,
+    email,
+    password
+  })
+
+  return user
 };
