@@ -10,6 +10,7 @@ import {
   jsonSchemaTransform,
 } from "fastify-type-provider-zod";
 import { usersRoutes } from "./routes/users-routes";
+import { shortLinkRoutes } from "./routes/short-link-routes";
 
 const server = fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
 
@@ -37,6 +38,7 @@ server.register(fastifySwaggerUi, {
 });
 
 server.register(usersRoutes)
+server.register(shortLinkRoutes)
 
 try {
   server.listen({ port: env.PORT });
