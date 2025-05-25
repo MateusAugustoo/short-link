@@ -84,6 +84,12 @@ export const shortLinkRoutes: FastifyPluginAsyncZod = async (app) => {
       })
     }
 
+    if (link.expiresAt && new Date(link.expiresAt) < new Date()) {
+      return reply.code(404).send({
+        message: 'Link expired'
+      })
+    }
+
     try {
       await addQuantVisitant({ id: link.id })
 
