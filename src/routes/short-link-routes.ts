@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { env } from "../env";
 import { db } from "../drizzle/client";
 import { insertLink } from "../functions/insert-link";
 import { generateShortLinkId } from "../functions/generate-short";
@@ -11,8 +12,8 @@ export const shortLinkRoutes: FastifyPluginAsyncZod = async (app) => {
     {
       schema: {
         tags: ["Short"],
-        params: z.object({
-          id: z.string(),
+        querystring: z.object({
+          id: z.string()
         }),
         body: z.object({
           url: z.string().url(),
@@ -29,7 +30,7 @@ export const shortLinkRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      const { id } = request.params;
+      const { id } = request.query;
       const { url, customId } = request.body;
 
       const shortId = customId || generateShortLinkId();
@@ -51,7 +52,7 @@ export const shortLinkRoutes: FastifyPluginAsyncZod = async (app) => {
           userId: id,
         });
 
-        const shortUrl = `${request.protocol}://${request.hostname}/${link.shortId}`;
+        const shortUrl = `${request.protocol}://${request.hostname}:${env.PORT}/${link.shortId}`;
 
         return reply.code(201).send({
           shortUrl,
