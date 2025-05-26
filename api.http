@@ -6,3 +6,17 @@ Content-Type: application/json
   "email": "mateus@gmail.com",
   "password": "123456"
 }
+
+###
+
+POST http://localhost:3000/shorten?id=01JW3QH73YCY3JE3JXAHXV9FQ0
+Content-Type: application/json
+
+{
+  "url": "https://github.com/MateusAugustoo/short-link/blob/main/src/server.ts",
+  "customId": "server"
+}
+
+###
+
+GET http://localhost:3000/list-link?id=01JW3QH73YCY3JE3JXAHXV9FQ0
