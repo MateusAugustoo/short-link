@@ -3,10 +3,12 @@ import { env } from "../env";
 import { db } from "../drizzle/client";
 import { insertLink } from "../functions/insert-link";
 import { generateShortLinkId } from "../functions/generate-short";
-import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+import type { FastifyPluginAsyncZod, ZodTypeProvider } from "fastify-type-provider-zod";
 import { addQuantVisitant } from '../functions/add-quant-visitant'
 
 export const shortLinkRoutes: FastifyPluginAsyncZod = async (app) => {
+  app.withTypeProvider<ZodTypeProvider>()
+
   app.post(
     "/shorten",
     {
@@ -99,5 +101,54 @@ export const shortLinkRoutes: FastifyPluginAsyncZod = async (app) => {
         message: 'Internal server error'
       })
     }
+  })
+
+  app.get('/list-link', {
+    schema: {
+      tags: ['Short'],
+      querystring: z.object({
+        id: z.string()
+      }),
+      response: {
+        200: z.object({
+          result: z.array(
+            z.object({
+              id: z.string(),
+              shortUrl: z.string().url(),
+              originalUrl: z.string().url(),
+              expiresAt: z.date().or(z.null())
+            })
+          )
+        }),
+        404: z.object({})
+      }
+    }
+  }, async (request, reply) => {
+    const { id } = request.query
+
+    const links = await db.query.links.findMany({
+      where: (links, { eq }) => eq(links.userId, id)
+    })
+
+    if (!links) {
+      return reply.code(404).send({
+        message: 'Links not found'
+      })
+    }
+
+    try {
+
+      const result = links.map(link => {
+        return {
+          id: link.id,
+          shortUrl: `${request.protocol}://${request.hostname}:${env.PORT}/${link.shortId}`,
+          originalUrl: link.originalUrl,
+          expiresAt: link.expiresAt
+        }
+      })
+      return reply.code(200).send({
+        result
+      })
+    } catch (error) { }
   })
 };
