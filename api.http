@@ -6,17 +6,3 @@ Content-Type: application/json
   "email": "mateus@gmail.com",
   "password": "123456"
 }
-
-###
-
-POST http://localhost:3000/shorten?id=01JTMGTP91B2AF6P3XSDFVPAG5
-Content-Type: application/json
-
-{
-  "url": "https://studio.firebase.google.com/?utm_source=firebase_studio_marketing&utm_medium=et&utm_campaign=FY25-Q2-firebasestudio_nextlaunch&utm_content=nav_getstarted&utm_term=-",
-  "customId": "project-idx"
-}
-
-###
-
-GET http://localhost:3000/project-idx
