@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { db } from "../drizzle/client";
+import { eq } from "drizzle-orm";
 import { insertLink } from "../functions/insert-link";
 import { generateShortLinkId } from "../functions/generate-short";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
@@ -10,7 +11,7 @@ export const shortLinkRoutes: FastifyPluginAsyncZod = async (app) => {
     {
       schema: {
         tags: ["Short"],
-        params: z.object({
+        querystring: z.object({
           id: z.string(),
         }),
         body: z.object({
@@ -28,7 +29,7 @@ export const shortLinkRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      const { id } = request.params;
+      const { id } = request.query;
       const { url, customId } = request.body;
 
       const shortId = customId || generateShortLinkId();
@@ -58,4 +59,36 @@ export const shortLinkRoutes: FastifyPluginAsyncZod = async (app) => {
       } catch (error) {}
     }
   );
+
+  app.get("/:shortId", {
+    schema: {
+      tags: ["Short"],
+      params: z.object({
+        shortId: z.string()
+      }),
+      response: {
+        404: z.object({
+          message: z.string()
+        })
+      }
+    }
+  }, async (request, reply) => {
+    const { shortId } = request.params
+
+    const link = await db.query.links.findFirst({
+      where: ( links, { eq }) => eq(links.shortId, shortId),
+    })
+
+    if (!link) {
+      return reply.code(404).send({
+        message: 'Link not found'
+      })
+    }
+
+    try {
+      console.log(link);
+    } catch (error) {
+      
+    }
+  });
 };
