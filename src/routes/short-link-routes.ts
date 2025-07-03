@@ -33,7 +33,7 @@ export const shortLinkRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      const { id } = request.query;
+      const { id } = request.params
       const { url, customId } = request.body;
 
       const shortId = customId || generateShortLinkId();
